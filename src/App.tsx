@@ -211,13 +211,25 @@ export default function LongevityLedgerApp() {
 }
 
 // local tab state (kept outside component to avoid re-declare in TSX literal above)
-const _initTab: "dashboard" | "bloods" | "imaging" | "vitals" | "fitness" | "meds" | "notes" | "importExport" = "dashboard";
-let _tabState = _initTab;
-let _tabListeners: ((v: typeof _initTab) => void)[] = [];
-function _setTab(v: typeof _initTab) {
+// local tab state (kept outside component to avoid re-declare in TSX literal above)
+type Tab =
+  | "dashboard"
+  | "bloods"
+  | "imaging"
+  | "vitals"
+  | "fitness"
+  | "meds"
+  | "notes"
+  | "importExport";
+
+let _tabState: Tab = "dashboard";
+let _tabListeners: ((v: Tab) => void)[] = [];
+
+function _setTab(v: Tab) {
   _tabState = v;
   _tabListeners.forEach((fn) => fn(v));
 }
+
 function useTabState() {
   const [, force] = useState(0);
   useEffect(() => {
@@ -226,6 +238,10 @@ function useTabState() {
     return () => {
       _tabListeners = _tabListeners.filter((f) => f !== cb);
     };
+  }, []);
+  return _tabState as Tab;
+}
+
   }, []);
   // @ts-ignore
   return _tabState as typeof _initTab;
